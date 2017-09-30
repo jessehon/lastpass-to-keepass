@@ -16,11 +16,11 @@ const lastPassToKeePassFields = {
 const protectedFields = new Set([passwordField]);
 
 const findOrCreateGroup = (db, parentGroup, groupName) => {
-  const exitingGroup = parentGroup.groups.find(
+  const existingGroup = parentGroup.groups.find(
     group => group.name === groupName
   );
-  if (exitingGroup) {
-    return exitingGroup;
+  if (existingGroup) {
+    return existingGroup;
   }
 
   return db.createGroup(parentGroup, groupName);
