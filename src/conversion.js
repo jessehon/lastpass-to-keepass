@@ -36,7 +36,7 @@ export default csv => {
 
   rows.forEach(row => {
     if (!row.name) {
-      return;
+      throw new Error('Unable to process entry with no "name"');
     }
 
     const group = findOrCreateGroup(db, defaultGroup, row.grouping);
