@@ -15,17 +15,31 @@ const lastPassToKeePassFields = {
 
 const protectedFields = new Set([passwordField]);
 
+const findOrCreateGroup = (db, parentGroup, groupName) => {
+  const exitingGroup = parentGroup.groups.find(
+    group => group.name === groupName
+  );
+  if (exitingGroup) {
+    return exitingGroup;
+  }
+
+  return db.createGroup(parentGroup, groupName);
+};
+
 export default csv => {
   const {data: rows} = parse(csv, {header: true});
   const credentials = new kdbxweb.Credentials(
     kdbxweb.ProtectedValue.fromString(unusedArgument)
   );
   const db = kdbxweb.Kdbx.create(credentials, unusedArgument);
-  const group = db.getDefaultGroup();
+  const defaultGroup = db.getDefaultGroup();
+
   rows.forEach(row => {
     if (!row.name) {
       return;
     }
+
+    const group = findOrCreateGroup(db, defaultGroup, row.grouping);
     const entry = db.createEntry(group);
     Object.keys(lastPassToKeePassFields).forEach(lastPassField => {
       const value = row[lastPassField];
@@ -37,5 +51,6 @@ export default csv => {
       }
     });
   });
+
   return db.saveXml();
 };
